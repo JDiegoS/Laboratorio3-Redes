@@ -47,8 +47,6 @@ class ClientDVR(slixmpp.ClientXMPP):
 
     async def respondEcho(self, to):
         #Responder a un mensaje echo
-        self.get_roster()
-        await asyncio.sleep(3)
         msg = {}
         msg['type'] = 'responseEcho'
         msg['Nodo fuente'] = self.jid
@@ -84,13 +82,14 @@ class ClientDVR(slixmpp.ClientXMPP):
                 #Recibio una respuesta de mensaje echo y puede actualizar su tabla
                 distance = time.time() - payload['time']
                 for i in self.neighborNames:
-                    if self.neighborNames[i] == payload['Nodo destino']:
+                    if self.neighborNames[i] == payload['Nodo fuente']:
                         self.table[i] = distance
-                        print("Tabla:\n" + self.table)
+                        print("Tabla")
+                        print(self.table)
                 
             elif payload['type'] == 'sendEcho':
                 #Recibio una solicitud de mensaje echo entonces la responde
-                await self.respondEcho(payload['Nodo destino'])
+                await self.respondEcho(payload['Nodo fuente'])
             
     
     async def start(self, event):
@@ -103,7 +102,7 @@ class ClientDVR(slixmpp.ClientXMPP):
         while sigue == True:
             opc2 =  int(input("\nIngrese una opcion:\n1. Enviar mensaje echo (a vecinos) \n2. Mensaje Privado\n3. Salir\n0. Notificaciones\n"))
             if opc2 == 0:
-                #Notificaciones / refresh
+                #Notificaciones / refresh para. Se debe utilizar para ver la tabla luego de enviar un echo
                 self.get_roster()
                 await asyncio.sleep(1)
             elif opc2 == 1:
