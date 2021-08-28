@@ -103,7 +103,7 @@ class ClientDVR(slixmpp.ClientXMPP):
 
         sigue = True
         while sigue == True:
-            opc2 =  int(input("\nIngrese una opcion:\n1. Enviar mensaje (echo) \n2. Salir\n0. Notificaciones\n"))
+            opc2 =  int(input("\nIngrese una opcion:\n1. Enviar mensaje echo (a vecinos) \n2. Mensaje Privado\n3. Salir\n0. Notificaciones\n"))
             if opc2 == 0:
                 #Notificaciones / refresh
                 self.get_roster()
