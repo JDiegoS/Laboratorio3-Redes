@@ -39,26 +39,6 @@ while termino != True:
         #Iniciar sesion
         userName = input("Ingrese el usuario: ")
         password = getpass("Ingrese la contrasena: ")
-
-        names = open('names-e.txt')
-        namesj = json.load(names)
-
-        topo = open('topo-e.txt')
-        topoj = json.load(topo)
-
-        names.close()
-        topo.close()
-
-        id = ''
-        for i in namesj['config']:
-            if namesj['config'][i] == userName:
-                id = i
-
-        neighbors = topoj['config'][id]
-        neighborNames = {}
-        for neighbor in namesj['config']:
-            if neighbor in neighbors:
-                neighborNames[neighbor] = namesj['config'][neighbor]
             
         algoritmo = int(input("Ingrese el algoritmo que desea utilizar:\n1. Flooding\n2. DVR\n"))
         
@@ -67,6 +47,26 @@ while termino != True:
             pass
         elif algoritmo == 2:
             #DVR
+            names = open('names-e.txt')
+            namesj = json.load(names)
+
+            topo = open('topo-e.txt')
+            topoj = json.load(topo)
+
+            names.close()
+            topo.close()
+
+            id = ''
+            for i in namesj['config']:
+                if namesj['config'][i] == userName:
+                    id = i
+
+            neighbors = topoj['config'][id]
+            neighborNames = {}
+            for neighbor in namesj['config']:
+                if neighbor in neighbors:
+                    neighborNames[neighbor] = namesj['config'][neighbor]
+                    
             currentC = ClientDVR(userName, password, id, neighborNames)
             currentC.connect()
             currentC.process(forever=False)

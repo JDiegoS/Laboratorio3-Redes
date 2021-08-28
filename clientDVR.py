@@ -45,8 +45,8 @@ class ClientDVR(slixmpp.ClientXMPP):
     async def sendEcho(self, to):
         msg = {}
         msg['type'] = 'sendEcho'
-        msg['fromNode'] = self.jid
-        msg['toNode'] = to
+        msg['Nodo fuente'] = self.jid
+        msg['Nodo destino'] = to
         msg['time'] = time.time()
         self.send_message(mto=to, mbody=json.dumps(msg), mtype='normal')
         self.get_roster()
@@ -57,8 +57,8 @@ class ClientDVR(slixmpp.ClientXMPP):
         await asyncio.sleep(3)
         msg = {}
         msg['type'] = 'responseEcho'
-        msg['fromNode'] = self.jid
-        msg['toNode'] = to
+        msg['Nodo fuente'] = self.jid
+        msg['Nodo destino'] = to
         msg['time'] = time.time()
         try:
             self.send_message(mto=to, mbody=json.dumps(msg), mtype='normal')
@@ -94,6 +94,7 @@ class ClientDVR(slixmpp.ClientXMPP):
                         print(self.table)
                 
             elif payload['type'] == 'sendEcho':
+                print(payload['fromNode'])
                 await self.respondEcho(payload['fromNode'])
             
     
