@@ -1,7 +1,7 @@
 #Laboratorio 3 Redes
 
 from getpass import getpass
-from client import ClientDVR
+from clientDVR import ClientDVR
 
 import slixmpp
 import json
@@ -60,7 +60,7 @@ while termino != True:
             if neighbor in neighbors:
                 neighborNames[neighbor] = namesj['config'][neighbor]
             
-        algoritmo = input("Ingrese el algoritmo que desea utilizar:\n 1. Flooding\n2. DVR\n")
+        algoritmo = int(input("Ingrese el algoritmo que desea utilizar:\n1. Flooding\n2. DVR\n"))
         
         if algoritmo == 1:
             #Flooding
