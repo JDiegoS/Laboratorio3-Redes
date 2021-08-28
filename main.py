@@ -1,10 +1,15 @@
-#Laboratorio 3 Redes
+# Laboratorio 3 Redes
 
 from getpass import getpass
 from clientDVR import ClientDVR
+from ClientFlooding import ClientFlooding
 
 import slixmpp
 import json
+import asyncio
+
+asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+
 
 class Register(slixmpp.ClientXMPP):
     def __init__(self, jid, password):
@@ -31,22 +36,31 @@ class Register(slixmpp.ClientXMPP):
             print("Error al registrarse")
             self.disconnect()
 
+
 termino = False
 print("\nBienvenido")
 while termino != True:
-    opc1 = int(input("\nIngrese una opcion:\n1. Iniciar sesion \n2. Registrar nuevo usuario \n3. Salir\n"))
+    opc1 = int(input(
+        "\nIngrese una opcion:\n1. Iniciar sesion \n2. Registrar nuevo usuario \n3. Salir\n"))
     if opc1 == 1:
-        #Iniciar sesion
+        # Iniciar sesion
         userName = input("Ingrese el usuario: ")
         password = getpass("Ingrese la contrasena: ")
-            
-        algoritmo = int(input("Ingrese el algoritmo que desea utilizar:\n1. Flooding\n2. DVR\n"))
-        
+
+        algoritmo = int(
+            input("Ingrese el algoritmo que desea utilizar:\n1. Flooding\n2. DVR\n"))
+
         if algoritmo == 1:
-            #Flooding
-            pass
+            recipient = input("A quien desea mandar su mensaje? =>")
+            message = input("Ingrese el mensaje: ")
+            currentC = ClientFlooding(userName, password, recipient, message)
+            currentC.connect()
+            currentC.process(forever=False)
+            print("after CurrentC")
+
         elif algoritmo == 2:
-            #DVR
+            # DVR
+
             names = open('names-e.txt')
             namesj = json.load(names)
 
@@ -66,21 +80,20 @@ while termino != True:
             for neighbor in namesj['config']:
                 if neighbor in neighbors:
                     neighborNames[neighbor] = namesj['config'][neighbor]
-                    
             currentC = ClientDVR(userName, password, id, neighborNames)
             currentC.connect()
             currentC.process(forever=False)
 
     elif opc1 == 2:
-        #Registrar
+        # Registrar
         newUser = input("Ingrese el usuario: ")
         newPass = getpass("Ingrese la contrasena: ")
 
         registerU = Register(newUser, newPass)
-        registerU.register_plugin('xep_0004') ### Data Forms
-        registerU.register_plugin('xep_0030') ### Service Discovery
-        registerU.register_plugin('xep_0066') ### Band Data
-        registerU.register_plugin('xep_0077') ### Band Registration
+        registerU.register_plugin('xep_0004')  # Data Forms
+        registerU.register_plugin('xep_0030')  # Service Discovery
+        registerU.register_plugin('xep_0066')  # Band Data
+        registerU.register_plugin('xep_0077')  # Band Registration
         registerU.connect()
         registerU.process(forever=False)
 
