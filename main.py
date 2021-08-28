@@ -23,6 +23,7 @@ class Register(slixmpp.ClientXMPP):
         self.get_roster()
 
     def register(self, event):
+        #Registrarse a alumchat
         resp = self.Iq()
         resp['type'] = 'set'
         resp['register']['username'] = self.boundjid.user
@@ -60,7 +61,6 @@ while termino != True:
 
         elif algoritmo == 2:
             # DVR
-
             names = open('names-e.txt')
             namesj = json.load(names)
 
@@ -80,6 +80,8 @@ while termino != True:
             for neighbor in namesj['config']:
                 if neighbor in neighbors:
                     neighborNames[neighbor] = namesj['config'][neighbor]
+            
+            #Se crea un cliente con algoritmo dvr pasandole sus vecinos y id de nodo
             currentC = ClientDVR(userName, password, id, neighborNames)
             currentC.connect()
             currentC.process(forever=False)

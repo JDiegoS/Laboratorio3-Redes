@@ -23,6 +23,7 @@ class ClientDVR(slixmpp.ClientXMPP):
 
 
     def BellmanFord(self, table2, sender):
+        #Se utiliza Bellman Ford para actualizar las tablas
         for i in table2:
             if i in self.table:
                 if i != self.id and i != sender:
@@ -33,16 +34,8 @@ class ClientDVR(slixmpp.ClientXMPP):
         
         return print(self.table)
 
-    def vectorTable(self, nodes):
-        self.table = {self.id: 0}
-        for neighbor in nodes:
-            self.table[neighbor] = 0
-
-    def sendTable(self):
-        for i in self.neighbors:
-            pass
-
     async def sendEcho(self, to):
+        #Enviar mensaje de echo para medir distancia
         msg = {}
         msg['type'] = 'sendEcho'
         msg['Nodo fuente'] = self.jid
@@ -53,6 +46,7 @@ class ClientDVR(slixmpp.ClientXMPP):
         await asyncio.sleep(1)
 
     async def respondEcho(self, to):
+        #Responder a un mensaje echo
         self.get_roster()
         await asyncio.sleep(3)
         msg = {}
@@ -69,6 +63,7 @@ class ClientDVR(slixmpp.ClientXMPP):
         
 
     async def privateChat(self):
+        #Mandar un mensaje privado
         uName = input("Ingrese el nombre del recipiente: ")
         mssg = input("Ingrese el mensaje: ")
         try:
@@ -80,21 +75,23 @@ class ClientDVR(slixmpp.ClientXMPP):
             print("Error al mandar mensaje")
     
     async def message(self, msg):
+        #Al recibir mensaje verificar que tipo de mensaje es
+
         if msg['type'] in ('chat'):
             print("\nMensaje recibido de %s:\n   %s\n" % (msg['from'], msg['body']))
         elif msg['type'] in ('normal'):
-            
             payload = json.loads(msg['body'])
-
             if payload['type'] == 'responseEcho':
+                #Recibio una respuesta de mensaje echo y puede actualizar su tabla
                 distance = time.time() - payload['time']
                 for i in self.neighborNames:
                     if self.neighborNames[i] == payload['fromNode']:
                         self.table[i] = distance
-                        print(self.table)
+                        print("Tabla:\n" + self.table)
                 
             elif payload['type'] == 'sendEcho':
-                print(payload['fromNode'])
+
+                #Recibio una solicitud de mensaje echo entonces la responde
                 await self.respondEcho(payload['fromNode'])
             
     
@@ -104,18 +101,22 @@ class ClientDVR(slixmpp.ClientXMPP):
         await asyncio.sleep(1)
         print("\nBienvenido al programa, " + self.jid)
 
-        for i in self.neighborNames:
-            await self.sendEcho(self.neighborNames[i])
-
         sigue = True
         while sigue == True:
-            opc2 =  int(input("\nIngrese una opcion:\n1. Mostrar Usuarios \n2. Salir\n"))
-            if opc2 == 1:
-                #Mensaje privado
-                #await self.privateChat()
+            opc2 =  int(input("\nIngrese una opcion:\n1. Enviar mensaje (echo) \n2. Salir\n0. Notificaciones\n"))
+            if opc2 == 0:
+                #Notificaciones / refresh
                 self.get_roster()
                 await asyncio.sleep(1)
+            elif opc2 == 1:
+                #Mandar echo
+                for i in self.neighborNames:
+                    await self.sendEcho(self.neighborNames[i])
             elif opc2 == 2:
+                #Mensasje privado
+                await self.privateChat()
+            elif opc2 == 3:
+                #Salir del programa
                 print("Hasta luego!")
                 self.disconnect()
                 sigue = False
