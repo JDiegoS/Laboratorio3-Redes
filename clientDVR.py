@@ -76,7 +76,6 @@ class ClientDVR(slixmpp.ClientXMPP):
     
     async def message(self, msg):
         #Al recibir mensaje verificar que tipo de mensaje es
-
         if msg['type'] in ('chat'):
             print("\nMensaje recibido de %s:\n   %s\n" % (msg['from'], msg['body']))
         elif msg['type'] in ('normal'):
@@ -85,14 +84,13 @@ class ClientDVR(slixmpp.ClientXMPP):
                 #Recibio una respuesta de mensaje echo y puede actualizar su tabla
                 distance = time.time() - payload['time']
                 for i in self.neighborNames:
-                    if self.neighborNames[i] == payload['fromNode']:
+                    if self.neighborNames[i] == payload['Nodo destino']:
                         self.table[i] = distance
                         print("Tabla:\n" + self.table)
                 
             elif payload['type'] == 'sendEcho':
-
                 #Recibio una solicitud de mensaje echo entonces la responde
-                await self.respondEcho(payload['fromNode'])
+                await self.respondEcho(payload['Nodo destino'])
             
     
     async def start(self, event):
